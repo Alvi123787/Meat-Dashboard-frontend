@@ -8,9 +8,27 @@ const getRuntimeEnv = () => {
 }
 
 export const normalizeApiBaseUrl = (value = '') => {
-  const trimmedValue = String(value || '').trim()
+  let trimmedValue = String(value || '').trim()
   if (!trimmedValue) return DEFAULT_API_BASE_URL
-  return trimmedValue.replace(/\/+$/, '')
+
+  // If multiple URLs were entered (e.g. comma-separated in env vars), pick the canonical/first valid one
+  if (trimmedValue.includes(',')) {
+    const parts = trimmedValue
+      .split(',')
+      .map((p) => p.trim())
+      .filter(Boolean)
+    const preferred = parts.find((p) => p.includes('meat-dashboard-backend.vercel.app')) || parts[0]
+    trimmedValue = preferred || DEFAULT_API_BASE_URL
+  }
+
+  let cleaned = trimmedValue.replace(/\/+$/, '')
+
+  // Ensure base URL ends with /api for backend endpoint routing
+  if (!cleaned.endsWith('/api') && !cleaned.includes('/api/')) {
+    cleaned = `${cleaned}/api`
+  }
+
+  return cleaned
 }
 
 export const buildApiUrl = (path = '', baseUrl = DEFAULT_API_BASE_URL) => {
@@ -26,3 +44,4 @@ export const buildApiUrl = (path = '', baseUrl = DEFAULT_API_BASE_URL) => {
 export const getApiBaseUrl = () => normalizeApiBaseUrl(getRuntimeEnv().VITE_API_BASE_URL || DEFAULT_API_BASE_URL)
 
 export const API_BASE_URL = getApiBaseUrl()
+
