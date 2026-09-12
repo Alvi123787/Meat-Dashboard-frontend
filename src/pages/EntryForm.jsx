@@ -5,11 +5,8 @@ import {
   FaCalendarAlt,
   FaShoppingBag,
   FaMoneyBillWave,
-  FaTruck,
-  FaBoxOpen,
-  FaBullhorn,
-  FaReceipt,
-  FaStickyNote
+  FaStickyNote,
+  FaPercentage
 } from 'react-icons/fa'
 import { entriesApi } from '../api/client'
 
@@ -23,10 +20,6 @@ const emptyForm = {
   orders: '',
   revenue: '',
   grossProfit: '',
-  totalDeliveryCost: '',
-  totalPackagingCost: '',
-  adsExpense: '',
-  otherExpenses: '',
   notes: ''
 }
 
@@ -61,10 +54,6 @@ const EntryForm = () => {
           orders: e.orders ?? '',
           revenue: e.revenue ?? '',
           grossProfit: e.grossProfit ?? '',
-          totalDeliveryCost: e.totalDeliveryCost ?? '',
-          totalPackagingCost: e.totalPackagingCost ?? '',
-          adsExpense: e.adsExpense ?? '',
-          otherExpenses: e.otherExpenses ?? '',
           notes: e.notes ?? ''
         })
       } catch (err) {
@@ -95,13 +84,14 @@ const EntryForm = () => {
     return Object.keys(newErrors).length === 0
   }
 
-  // ── Live-computed preview (mirrors backend/spreadsheet formulas exactly) ──
+  // ── Live-computed metrics ──
   const preview = useMemo(() => {
-    const totalDeliveryCost = parseNumericValue(form.totalDeliveryCost)
-    const totalPackagingCost = parseNumericValue(form.totalPackagingCost)
-    const totalExpenses = totalDeliveryCost + totalPackagingCost + parseNumericValue(form.adsExpense) + parseNumericValue(form.otherExpenses)
-    const netProfitLoss = parseNumericValue(form.grossProfit) - totalExpenses
-    return { totalDeliveryCost, totalPackagingCost, totalExpenses, netProfitLoss }
+    const revenue = parseNumericValue(form.revenue)
+    const grossProfit = parseNumericValue(form.grossProfit)
+    const orders = parseNumericValue(form.orders)
+    const marginPct = revenue > 0 ? (grossProfit / revenue) * 100 : 0
+    const aov = orders > 0 ? revenue / orders : 0
+    return { revenue, grossProfit, marginPct, aov }
   }, [form])
 
   const handleSubmit = async (e) => {
@@ -112,19 +102,12 @@ const EntryForm = () => {
     submittingRef.current = true
     setSubmitting(true)
 
-    const formElement = e.currentTarget
-    const getFieldValue = (name) => formElement.elements.namedItem(name)?.value ?? ''
-
     const payload = {
-      date: getFieldValue('date'),
-      orders: parseNumericValue(getFieldValue('orders')),
-      revenue: parseNumericValue(getFieldValue('revenue')),
-      grossProfit: parseNumericValue(getFieldValue('grossProfit')),
-      totalDeliveryCost: parseNumericValue(getFieldValue('totalDeliveryCost')),
-      totalPackagingCost: parseNumericValue(getFieldValue('totalPackagingCost')),
-      adsExpense: parseNumericValue(getFieldValue('adsExpense')),
-      otherExpenses: parseNumericValue(getFieldValue('otherExpenses')),
-      notes: getFieldValue('notes')
+      date: form.date,
+      orders: parseNumericValue(form.orders),
+      revenue: parseNumericValue(form.revenue),
+      grossProfit: parseNumericValue(form.grossProfit),
+      notes: form.notes || ''
     }
 
     try {
@@ -133,7 +116,7 @@ const EntryForm = () => {
         toast.success('Entry updated')
       } else {
         await entriesApi.create(payload)
-        toast.success('Entry added')
+        toast.success('Daily entry saved')
       }
       navigate('/')
     } catch (err) {
@@ -155,12 +138,12 @@ const EntryForm = () => {
       <div className="page-header">
         <div>
           <h2>{isEditMode ? 'Edit Daily Entry' : 'Add Daily Entry'}</h2>
-          <p>Fill in today's numbers — totals and profit/loss are calculated automatically.</p>
+          <p>Record today's orders and sales figures. Bulk expenses (Ads, Packaging, etc.) can be recorded in the Expenses section.</p>
         </div>
       </div>
 
       <form className="form-card" onSubmit={handleSubmit}>
-        <p className="form-section-title">Today's Activity</p>
+        <p className="form-section-title">Today's Sales &amp; Orders Activity</p>
         <div className="form-grid">
           <div className="form-group">
             <label className="form-label" htmlFor="date">
@@ -179,7 +162,7 @@ const EntryForm = () => {
 
           <div className="form-group">
             <label className="form-label" htmlFor="orders">
-              <FaShoppingBag /> Orders <span className="form-required">*</span>
+              <FaShoppingBag /> Total Orders <span className="form-required">*</span>
             </label>
             <input
               id="orders"
@@ -188,7 +171,7 @@ const EntryForm = () => {
               step="any"
               name="orders"
               className={`form-input ${errors.orders ? 'form-input--error' : ''}`}
-              placeholder="e.g. 2"
+              placeholder="e.g. 5"
               value={form.orders}
               onChange={handleChange}
             />
@@ -197,7 +180,7 @@ const EntryForm = () => {
 
           <div className="form-group">
             <label className="form-label" htmlFor="revenue">
-              <FaMoneyBillWave /> Revenue (Rs.) <span className="form-required">*</span>
+              <FaMoneyBillWave /> Total Revenue (Rs.) <span className="form-required">*</span>
             </label>
             <input
               id="revenue"
@@ -215,7 +198,7 @@ const EntryForm = () => {
 
           <div className="form-group">
             <label className="form-label" htmlFor="grossProfit">
-              <FaMoneyBillWave /> Today's Orders Profit (Gross) <span className="form-required">*</span>
+              <FaMoneyBillWave /> Today's Orders Profit (Gross Rs.) <span className="form-required">*</span>
             </label>
             <input
               id="grossProfit"
@@ -223,86 +206,12 @@ const EntryForm = () => {
               step="any"
               name="grossProfit"
               className={`form-input ${errors.grossProfit ? 'form-input--error' : ''}`}
-              placeholder="e.g. 2600"
+              placeholder="e.g. 3800"
               value={form.grossProfit}
               onChange={handleChange}
             />
             {errors.grossProfit && <span className="form-error">{errors.grossProfit}</span>}
-            <span className="form-hint">Revenue minus cost of goods sold, before delivery/packaging/ads.</span>
-          </div>
-        </div>
-
-        <p className="form-section-title">Daily Expenses</p>
-        <div className="form-grid">
-          <div className="form-group">
-            <label className="form-label" htmlFor="totalDeliveryCost">
-              <FaTruck /> Total Delivery Cost (Today)
-            </label>
-            <input
-              id="totalDeliveryCost"
-              type="number"
-              min="0"
-              step="any"
-              name="totalDeliveryCost"
-              className="form-input"
-              placeholder="e.g. 300"
-              value={form.totalDeliveryCost}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className="form-group">
-            <label className="form-label" htmlFor="totalPackagingCost">
-              <FaBoxOpen /> Total Packaging Cost (Today)
-            </label>
-            <input
-              id="totalPackagingCost"
-              type="number"
-              min="0"
-              step="any"
-              name="totalPackagingCost"
-              className="form-input"
-              placeholder="e.g. 120"
-              value={form.totalPackagingCost}
-              onChange={handleChange}
-            />
-          </div>
-        </div>
-
-        <p className="form-section-title">Other Expenses</p>
-        <div className="form-grid">
-          <div className="form-group">
-            <label className="form-label" htmlFor="adsExpense">
-              <FaBullhorn /> Ads Expense
-            </label>
-            <input
-              id="adsExpense"
-              type="number"
-              min="0"
-              step="any"
-              name="adsExpense"
-              className="form-input"
-              placeholder="e.g. 800"
-              value={form.adsExpense}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className="form-group">
-            <label className="form-label" htmlFor="otherExpenses">
-              <FaReceipt /> Other Expenses
-            </label>
-            <input
-              id="otherExpenses"
-              type="number"
-              min="0"
-              step="any"
-              name="otherExpenses"
-              className="form-input"
-              placeholder="e.g. 80"
-              value={form.otherExpenses}
-              onChange={handleChange}
-            />
+            <span className="form-hint">Revenue minus cost of goods sold (meat wholesale cost).</span>
           </div>
 
           <div className="form-group form-group--full">
@@ -314,7 +223,7 @@ const EntryForm = () => {
               type="text"
               name="notes"
               className="form-input"
-              placeholder="Optional notes about today"
+              placeholder="Optional notes about today (e.g., weekend rush, rain delay)"
               value={form.notes}
               onChange={handleChange}
             />
@@ -322,33 +231,34 @@ const EntryForm = () => {
         </div>
 
         <div className="live-preview">
-          <h4>Live Preview (auto-calculated)</h4>
+          <h4>Performance Preview</h4>
           <div className="live-preview-grid">
             <div className="live-preview-item">
-              <span>Total Delivery Cost</span>
-              <span>Rs. {preview.totalDeliveryCost.toLocaleString()}</span>
+              <span>Total Revenue</span>
+              <span>Rs. {preview.revenue.toLocaleString()}</span>
             </div>
             <div className="live-preview-item">
-              <span>Total Packaging Cost</span>
-              <span>Rs. {preview.totalPackagingCost.toLocaleString()}</span>
-            </div>
-            <div className="live-preview-item">
-              <span>Total Expenses</span>
-              <span>Rs. {preview.totalExpenses.toLocaleString()}</span>
-            </div>
-            <div className="live-preview-item">
-              <span>Net Profit / Loss</span>
-              <span style={{ color: preview.netProfitLoss >= 0 ? 'var(--color-profit)' : 'var(--color-loss)' }}>
-                {preview.netProfitLoss >= 0 ? '+' : ''}
-                Rs. {preview.netProfitLoss.toLocaleString()}
+              <span>Gross Profit</span>
+              <span style={{ color: preview.grossProfit >= 0 ? 'var(--color-profit)' : 'var(--color-loss)' }}>
+                Rs. {preview.grossProfit.toLocaleString()}
               </span>
+            </div>
+            <div className="live-preview-item">
+              <span>Gross Margin %</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                <FaPercentage size={11} /> {preview.marginPct.toFixed(1)}%
+              </span>
+            </div>
+            <div className="live-preview-item">
+              <span>Avg Order Value</span>
+              <span>Rs. {Math.round(preview.aov).toLocaleString()}</span>
             </div>
           </div>
         </div>
 
         <div className="form-actions">
           <button type="submit" className="btn btn-primary" disabled={submitting}>
-            {submitting ? 'Saving…' : isEditMode ? 'Update Entry' : 'Save Entry'}
+            {submitting ? 'Saving…' : isEditMode ? 'Update Entry' : 'Save Daily Entry'}
           </button>
           <button type="button" className="btn btn-outline" onClick={() => navigate('/')}>
             Cancel

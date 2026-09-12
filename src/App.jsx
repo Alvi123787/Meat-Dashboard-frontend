@@ -7,6 +7,7 @@ import PasswordGate from './components/PasswordGate'
 import Sidebar from './components/Sidebar'
 import Dashboard from './pages/Dashboard'
 import EntryForm from './pages/EntryForm'
+import Expenses from './pages/Expenses'
 import ReceiptPrinter from './pages/ReceiptPrinter'
 
 const AppContent = () => {
@@ -23,6 +24,7 @@ const AppContent = () => {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/add-entry" element={<EntryForm />} />
+          <Route path="/expenses" element={<Expenses />} />
           <Route path="/receipt" element={<ReceiptPrinter />} />
         </Routes>
       </main>

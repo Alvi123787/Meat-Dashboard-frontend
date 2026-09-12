@@ -46,6 +46,14 @@ export const entriesApi = {
   summary: (params = {}) => client.get('/entries/summary', { params }).then((r) => r.data)
 }
 
+export const expensesApi = {
+  list: (params = {}) => client.get('/expenses', { params }).then((r) => r.data),
+  getById: (id) => client.get(`/expenses/${id}`).then((r) => r.data),
+  create: (payload) => client.post('/expenses', payload).then((r) => r.data),
+  update: (id, payload) => client.put(`/expenses/${id}`, payload).then((r) => r.data),
+  remove: (id) => client.delete(`/expenses/${id}`).then((r) => r.data)
+}
+
 const FARM2MEAT_API_BASE = 'https://farm2-meat-backend.vercel.app/api'
 
 export const meatItemsApi = {

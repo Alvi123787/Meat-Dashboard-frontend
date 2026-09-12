@@ -37,6 +37,13 @@ const Sidebar = () => {
           <span>Add Daily Entry</span>
         </NavLink>
         <NavLink
+          to="/expenses"
+          className={({ isActive }) => `sidebar-link ${isActive ? 'sidebar-link--active' : ''}`}
+        >
+          <MdReceiptLong />
+          <span>Expenses</span>
+        </NavLink>
+        <NavLink
           to="/receipt"
           className={({ isActive }) => `sidebar-link ${isActive ? 'sidebar-link--active' : ''}`}
         >
