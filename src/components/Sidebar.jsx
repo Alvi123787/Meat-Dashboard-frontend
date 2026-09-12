@@ -8,14 +8,17 @@ import {
   MdClose,
   MdChevronLeft,
   MdChevronRight,
-  MdAttachMoney
+  MdAttachMoney,
+  MdGetApp
 } from 'react-icons/md'
 import { GiKnifeFork } from 'react-icons/gi'
 import ThemeSwitcher from './ThemeSwitcher'
 import { useAuth } from '../context/AuthContext'
+import { usePwa } from '../context/PwaContext'
 
 const Sidebar = ({ isOpen = false, onClose, isCollapsed = false, onToggleCollapse }) => {
   const { logout } = useAuth()
+  const { installApp, isInstalled } = usePwa()
 
   const handleLinkClick = () => {
     if (onClose) onClose()
@@ -120,6 +123,21 @@ const Sidebar = ({ isOpen = false, onClose, isCollapsed = false, onToggleCollaps
       )}
 
       <div className="sidebar-bottom-controls">
+        <button
+          type="button"
+          className="sidebar-pwa-btn"
+          onClick={installApp}
+          title={isInstalled ? 'MeatbyAlvi App Installed' : 'Download MeatbyAlvi App (Desktop / Mobile)'}
+        >
+          <MdGetApp size={19} />
+          {!isCollapsed && (
+            <div className="sidebar-pwa-btn-text">
+              <span>{isInstalled ? 'App Installed' : 'Download App'}</span>
+              <small>{isInstalled ? 'Running Standalone' : 'Desktop / Mobile'}</small>
+            </div>
+          )}
+        </button>
+
         <ThemeSwitcher />
 
         <button type="button" className="sidebar-logout" onClick={logout} title="Logout">

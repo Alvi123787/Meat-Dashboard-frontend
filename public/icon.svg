@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B3D2E"/>
+      <stop offset="50%" stop-color="#12694E"/>
+      <stop offset="100%" stop-color="#082A20"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F2C879"/>
+      <stop offset="50%" stop-color="#D4AF37"/>
+      <stop offset="100%" stop-color="#B8860B"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <!-- Background rounded app squircle -->
+  <rect width="512" height="512" rx="128" fill="url(#bgGrad)"/>
+
+  <!-- Decorative Inner Border -->
+  <rect x="24" y="24" width="464" height="464" rx="108" fill="none" stroke="url(#goldGrad)" stroke-width="4" stroke-opacity="0.4"/>
+
+  <!-- Center Emblem -->
+  <g filter="url(#shadow)" transform="translate(256, 230)">
+    <!-- Crossed Fork & Knife (Knife on left, Fork on right) -->
+    <!-- Knife Blade -->
+    <path d="M -50 -110 C -25 -110 0 -85 0 -45 L -10 30 L -30 30 L -30 110 C -30 120 -40 125 -45 125 C -50 125 -60 120 -60 110 L -60 30 L -70 30 C -70 -40 -70 -110 -50 -110 Z" fill="url(#goldGrad)" transform="rotate(-30)"/>
+    
+    <!-- Fork -->
+    <path d="M 50 -110 L 50 -50 C 50 -35 40 -25 30 -25 L 30 110 C 30 120 40 125 45 125 C 50 125 60 120 60 110 L 60 -25 C 50 -25 40 -35 40 -50 L 40 -110 Z M 25 -110 L 25 -55 C 25 -40 30 -35 30 -35 L 30 -110 Z M 65 -110 L 65 -55 C 65 -40 60 -35 60 -35 L 60 -110 Z" fill="url(#goldGrad)" transform="rotate(30)"/>
+  </g>
+
+  <!-- Brand Typography -->
+  <text x="256" y="415" text-anchor="middle" font-family="'Playfair Display', Georgia, serif" font-weight="800" font-size="44" fill="#FFFFFF" letter-spacing="2">MEATBYALVI</text>
+  <text x="256" y="450" text-anchor="middle" font-family="'Poppins', sans-serif" font-weight="600" font-size="19" fill="#D4AF37" letter-spacing="5">TRACKER</text>
+</svg>
