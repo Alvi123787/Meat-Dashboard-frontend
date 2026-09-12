@@ -352,7 +352,7 @@ const ReceiptPrinter = () => {
           </div>
 
           {/* Right Column: Order Builder & Receipt Preview */}
-          <div className="pos-order-panel">
+          <div className="pos-order-panel" id="pos-order-section">
             <div className="panel pos-order-card">
               <div className="panel-header pos-order-header">
                 <div>
@@ -604,6 +604,25 @@ const ReceiptPrinter = () => {
             </div>
           </div>
         </div>
+
+        {/* Floating Quick Jump Bar for Mobile Screens */}
+        {cart.length > 0 && (
+          <div className="pos-mobile-floating-bar no-print">
+            <div className="pos-floating-bar-info">
+              <strong>{cart.length} item{cart.length === 1 ? '' : 's'} in order</strong>
+              <span>Total: {formatMoney(grandTotal)}</span>
+            </div>
+            <button
+              type="button"
+              className="btn btn-primary btn-sm pos-floating-bar-btn"
+              onClick={() => {
+                document.getElementById('pos-order-section')?.scrollIntoView({ behavior: 'smooth' })
+              }}
+            >
+              <MdShoppingBag size={16} /> View Order &amp; Print
+            </button>
+          </div>
+        )}
       </div>
 
       {/* ── PRINT-ONLY CONTAINER (Rendered only on paper/PDF print) ── */}

@@ -192,15 +192,17 @@ const Dashboard = () => {
               </button>
             )}
           </div>
-          <button className="btn btn-outline" onClick={handleExportCsv}>
-            Export CSV
-          </button>
-          <button className="btn btn-outline" onClick={() => navigate('/expenses')}>
-            + Record Expense
-          </button>
-          <button className="btn btn-primary" onClick={() => navigate('/add-entry')}>
-            + Add Daily Entry
-          </button>
+          <div className="page-header-buttons">
+            <button className="btn btn-outline" onClick={handleExportCsv}>
+              Export CSV
+            </button>
+            <button className="btn btn-outline" onClick={() => navigate('/expenses')}>
+              + Record Expense
+            </button>
+            <button className="btn btn-primary" onClick={() => navigate('/add-entry')}>
+              + Add Daily Entry
+            </button>
+          </div>
         </div>
       </div>
 
