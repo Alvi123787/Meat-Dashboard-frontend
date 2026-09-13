@@ -12,6 +12,7 @@ import PwaInstallModal from './components/PwaInstallModal'
 import Dashboard from './pages/Dashboard'
 import EntryForm from './pages/EntryForm'
 import Expenses from './pages/Expenses'
+import Dues from './pages/Dues'
 import ReceiptPrinter from './pages/ReceiptPrinter'
 
 const AppContent = () => {
@@ -76,6 +77,7 @@ const AppContent = () => {
           <Route path="/" element={<Dashboard />} />
           <Route path="/add-entry" element={<EntryForm />} />
           <Route path="/expenses" element={<Expenses />} />
+          <Route path="/dues" element={<Dues />} />
           <Route path="/receipt" element={<ReceiptPrinter />} />
         </Routes>
       </main>

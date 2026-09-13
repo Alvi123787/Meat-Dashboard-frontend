@@ -9,6 +9,7 @@ import {
   MdChevronLeft,
   MdChevronRight,
   MdAttachMoney,
+  MdHandshake,
   MdGetApp
 } from 'react-icons/md'
 import { GiKnifeFork } from 'react-icons/gi'
@@ -101,6 +102,16 @@ const Sidebar = ({ isOpen = false, onClose, isCollapsed = false, onToggleCollaps
         >
           <MdAttachMoney size={20} />
           <span className="sidebar-link-label">Expenses</span>
+        </NavLink>
+
+        <NavLink
+          to="/dues"
+          onClick={handleLinkClick}
+          className={({ isActive }) => `sidebar-link ${isActive ? 'sidebar-link--active' : ''}`}
+          title="Dues"
+        >
+          <MdHandshake size={20} />
+          <span className="sidebar-link-label">Dues</span>
         </NavLink>
 
         <NavLink
